@@ -60,3 +60,18 @@
 // });
 
 // logger.goEvent();
+
+// const http = require("node:http");
+
+// const server = http.createServer((req, res) => {
+//   if (req.url === "/") {
+//     res.write("Home Page");
+//     res.end();
+//   }
+//   if (req.url === "/about") {
+//     res.write("About page");
+//     res.end();
+//   }
+// });
+
+// server.listen(8000);
