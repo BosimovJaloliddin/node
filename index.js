@@ -75,3 +75,27 @@
 // });
 
 // server.listen(8000);
+
+// =======================================
+
+// const getData = async () => {
+//   let res = await fetch(
+//     "https://kun.uz/news/2024/06/25/200-dollar-uchun-200-mln-som-badal-tolayotganlar-banklar-nega-ishsizlarga-kredit-bergan"
+//   )
+//     .then((res) => res.json())
+//     .then((res) => console.log(res));
+// };
+// getData();
+
+const express = require("express");
+const app = express();
+
+app.get("/", (req, res) => {
+  res.send("Go...");
+});
+
+const port = process.env.PORT || 5000;
+
+app.listen(port, () => {
+  console.log(port);
+});
