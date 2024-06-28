@@ -87,15 +87,39 @@
 // };
 // getData();
 
+// const express = require("express");
+// const app = express();
+
+// app.get("/", (req, res) => {
+//   res.send("Go...");
+// });
+
+// const port = process.env.PORT || 5000;
+
+// app.listen(port, () => {
+//   console.log(port);
+// });
+
+const books = [
+  { id: 1, name: "halqa" },
+  { id: 2, name: "halqa" },
+  { id: 3, name: "halqa" },
+  { id: 4, name: "halqa" },
+];
+
 const express = require("express");
 const app = express();
+app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("Go...");
+app.get("/api/books", (req, res) => {
+  const book = {
+    id: books.length + 1,
+    name: req.body.name,
+  };
+  books.push(book);
+  res.status(201).send(book);
 });
 
-const port = process.env.PORT || 5000;
-
-app.listen(port, () => {
-  console.log(port);
+app.listen(5000, () => {
+  console.log(`5000 run port`);
 });
