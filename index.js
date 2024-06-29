@@ -108,10 +108,13 @@ const books = [
 ];
 
 const express = require("express");
+const Joi = require("joi");
 const app = express();
 app.use(express.json());
 
-app.get("/api/books", (req, res) => {
+app.post("/api/books", (req, res) => {
+  validCode(req, res);
+
   const book = {
     id: books.length + 1,
     name: req.body.name,
@@ -119,6 +122,58 @@ app.get("/api/books", (req, res) => {
   books.push(book);
   res.status(201).send(book);
 });
+
+app.put("/api/books/:id", (req, res) => {
+  //Kitobni topib olamiz
+  //Kitob bo'lmasa 404 qaytaramiz
+  const book = books.find((val) => val.id === parseInt(req.params.id));
+  if (!book) {
+    return res.status(404).send("Kitob mavjud emas");
+  }
+  //kitob topilsa uni validatsiya qilamiz
+  //agar kitob validatsiyadan o'tmasa 400 qayataramiz
+  validCode(req, res);
+
+  // kitobni yangilaymiz
+  book.name = req.body.name;
+  //yangilangan kitobni qaytaramiz
+  res.send(book);
+});
+
+app.get("/api/books/:id", (req, res) => {
+  const oneBook = books.find((val) => val.id === parseInt(req.params.id));
+  if (!oneBook) {
+    res.status(404).send("Kitob mavjud emas");
+  }
+  res.send(oneBook);
+});
+app.delete("/api/books/:id", (req, res) => {
+  const book = books.find((val) => val.id === parseInt(req.params.id));
+  if (!book) {
+    return res.status(404).send("Kitob topilmadi");
+  }
+  const indexBook = books.indexOf(book);
+
+  books.splice(indexBook, 1);
+
+  res.send(book);
+});
+
+app.get("/books", (req, res) => {
+  res.send(books);
+});
+
+function validCode(req, res) {
+  const bookSchema = Joi.object({
+    name: Joi.string().required().min(3),
+  });
+
+  const result = bookSchema.validate(req.body);
+
+  if (result.error) {
+    return res.status(400).send(result.error.details[0].message);
+  }
+}
 
 app.listen(5000, () => {
   console.log(`5000 run port`);
