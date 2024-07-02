@@ -180,77 +180,29 @@
 // });
 
 const express = require("express");
-const Joi = require("joi");
-const logger = require("./logger");
+const logger = require("./middleware/logger");
 const helmet = require("helmet");
 const morgan = require("morgan");
 const app = express();
+const cars = require("./routes/cars");
+
+app.use("/api/cars", cars);
+app.set("view engine", "pug");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.use(helmet());
-app.use(morgan("tiny"));
+
+if (app.get("env") === "development") {
+  app.use(morgan("tiny"));
+  console.log("Logger ishlayabdi ...");
+}
+// console.log(config.get("name"));
+
+// console.log(process.env.NODE_ENV);
+// console.log(app.get("env"));
 
 app.use(logger);
-
-const cars = [
-  { id: 1, name: "cobalt", year: 2024 },
-  { id: 2, name: "nexia", year: 2024 },
-  { id: 3, name: "bmw", year: 2024 },
-  { id: 4, name: "kaptiva", year: 2024 },
-];
-
-app.get("/api/cars", (req, res) => {
-  res.send(cars);
-});
-app.post("/api/cars", (req, res) => {
-  validetionFun(res, req);
-
-  const car = {
-    id: cars.length + 1,
-    name: req.body.name,
-    year: req.body.year,
-  };
-  cars.push(car);
-  res.status(201).send(car);
-});
-
-app.put("/api/cars/:id", (req, res) => {
-  const car = cars.find((v) => v.id === parseInt(req.params.id));
-  if (!car) {
-    return res.send("Bu id'da ma'lumot mavjud emas");
-  }
-
-  validetionFun(res, req);
-
-  car.name = req.body.name;
-  car.yera = req.body.yera;
-
-  res.send(car);
-});
-app.delete("/api/cars/:id", (req, res) => {
-  const car = cars.find((v) => v.id === parseInt(req.params.id));
-  if (!car) {
-    return res.send("Bu id'da ma'lumot yo'q");
-  }
-
-  const indexCar = cars.indexOf(car);
-  cars.splice(indexCar, 1);
-  res.status(200).send(cars);
-});
-
-function validetionFun(res, req) {
-  const carSchema = Joi.object({
-    name: Joi.string().required().min(1),
-    year: Joi.number().required(),
-  });
-
-  const result = carSchema.validate(req.body);
-
-  if (result.error) {
-    return res.status(404).send(result.error.details);
-  }
-}
 
 app.listen(5001, () => {
   console.log("5001 run port");
